@@ -1,12 +1,16 @@
 import React from "react";
-
-function Congratulations({ correctAnswers, totalQuestions, handlePlayAgain }) {
+interface congrats{
+  correctAnswers: number;
+  totalQuestions: number;
+  handlePlayAgain: ()=>void;
+}
+function Congratulations({ correctAnswers, totalQuestions, handlePlayAgain }: congrats) {
   const percentage = Math.round((correctAnswers / totalQuestions) * 100);
   
 
   return (
     <div className=" fixed bg-slate-500 rounded-lg flex items-center justify-center p-4">
-      <div className="rounded-2xl max-w-[50dvw]  max-h-[50dvh] p-12 text-center max-w-md w-full">
+      <div className="rounded-2xl max-w-[50dvw]  max-h-[50dvh] p-12 text-center w-full">
           <h1 className="text-white text-3xl font-bold mb-4">
             Congratulations!
           </h1>

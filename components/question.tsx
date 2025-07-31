@@ -4,6 +4,7 @@ import ProgressBar from "./progressbar";
 interface QuestionType {
   flag: string;
   options: string[];
+  correctAnswer: string;
 }
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
   handleAnswer: (index: number, answer: string) => void;
   onNext: () => void;
   onPrev: () => void;
+  onFinish: () => void;
 }
 
 export default function Question({
@@ -24,8 +26,8 @@ export default function Question({
   onPrev,
   onFinish,
 }: Props) {
-  const [selectedAnswer, setSelectedAnswer] = useState(userAnswer || null);
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(userAnswer || null);
+  const [showFeedback, setShowFeedback] = useState<boolean>(false);
 
   useEffect(() => {
     setSelectedAnswer(userAnswer || null);
@@ -38,43 +40,39 @@ export default function Question({
     setShowFeedback(true);
     handleAnswer(questionIndex, option);
   };
-  const next=()=>{
+  const next = () => {
     setShowFeedback(false);
   }
-  const getOptionStyle = (option) => {
+
+  const getOptionStyle = (option: string): string => {
     if (!showFeedback) {
       return "bg-slate-700/50 hover:bg-slate-600/50 text-white border-slate-600";
     }
-    
-    if (option === question.correctAnswer) {
+    if (question && option === question.correctAnswer) {
       return "bg-green-500 text-white border-green-400";
     }
-    
-    if (option === selectedAnswer && option !== question.correctAnswer) {
+    if (question && option === selectedAnswer && option !== question.correctAnswer) {
       return "bg-red-500 text-white border-red-400";
     }
-    
     return "bg-slate-700/30 text-gray-400 border-slate-600";
   };
 
-  const getOptionIcon = (option) => {
-    if (!showFeedback) return null;
-    
+  const getOptionIcon = (option: string): React.ReactNode => {
+    if (!showFeedback || !question) return null;
     if (option === question.correctAnswer) {
       return <span className="ml-2">✓</span>;
     }
-    
     if (option === selectedAnswer && option !== question.correctAnswer) {
       return <span className="ml-2">✗</span>;
     }
-    
     return null;
   };
 
   if (!question) {
     return (
-      <div className="flex flex-col gap-8 justify-center">
-        <ProgressBar />
+      <div className="flex flex-col gap-4 justify-center">
+        <ProgressBar 
+          current={questionIndex}/>
         <div className="text-center mb-8">
           <h2 className="text-white text-xl mb-6">
             No question data available.
@@ -86,10 +84,9 @@ export default function Question({
 
   return (
     <div key={questionIndex} className="flex w-full flex-col gap-8 justify-center">
-      <ProgressBar 
-          current={questionIndex}/>
-      <div className="text-center mb-8">
-        <h2 className="text-white text-xl mb-6">
+      <ProgressBar current={questionIndex} />
+      <div className="text-center mb-4">
+        <h2 className="text-white text-xl mb-2">
           Which country does this flag belong to?
         </h2>
         <div className="mb-8">
@@ -100,8 +97,8 @@ export default function Question({
           />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-8">
-         {question.options.map((option, index) => (
+      <div className="grid grid-cols-2 gap-6">
+        {question.options.map((option, index) => (
           <button
             key={index}
             onClick={() => handleOptionClick(option)}
@@ -118,34 +115,31 @@ export default function Question({
           </button>
         ))}
       </div>
-     <div className="flex gap-4  items-center">
-       {(questionIndex > 0) && 
-
-         <button
-         className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-medium "
-         onClick={onPrev} >
-          Previous
-        </button>
-      }
-
-
-          {(questionIndex < 9) ?
+      <div className="flex gap-4 items-center">
+        {(questionIndex > 0) &&
           <button
-          className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-medium "
-          onClick={()=>{
-            onNext(); 
-            next()}}
-            >
+            className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-medium "
+            onClick={onPrev} >
+            Previous
+          </button>
+        }
+        {(questionIndex < 9) ?
+          <button
+            className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl font-medium "
+            onClick={() => {
+              onNext();
+              next();
+            }}
+          >
             Next
           </button>
           : <button
-          className="bg-green-500 hover:bg-green-600 text-white  px-6 py-3 rounded-xl font-medium "
-          onClick={onFinish}
-            >
+            className="bg-green-500 hover:bg-green-600 text-white  px-6 py-3 rounded-xl font-medium "
+            onClick={onFinish}
+          >
             Submit
           </button>
-          }
-        
+        }
       </div>
     </div>
   );

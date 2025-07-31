@@ -71,11 +71,11 @@ export default function Question({
   if (!question) {
     return (
       <div className="flex flex-col gap-4 justify-center">
-        <ProgressBar 
-          current={questionIndex}/>
-        <div className="text-center mb-8">
+        <div className="text-center flex justify-center mb-8">
           <h2 className="text-white text-xl mb-6">
-            No question data available.
+            Loading Questions
+          </h2>
+           <h2 className="text-white border-4 h-8 w-8 border-r-blue-600 text-xl rounded-full mb-6 animate-spin">
           </h2>
         </div>
       </div>
